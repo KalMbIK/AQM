@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from scipy.constants import *
 
 nm = 10**-9
-L = 1*nm
+L = 1.*nm
 A = sqrt(256/(63*L))
 
 coeffs = {1:10*A/16, 3: -5*A/16, 5:A/16}
@@ -35,7 +35,9 @@ densityV=np.vectorize(density)
 
 
 Z = np.linspace(0,L,100)
-T = np.linspace(0, nm*0.00014, 10)
-for t in T:
-    plt.plot(Z,densityV(Z,t))
+T = np.linspace(0, nm*0.000014, 1000)
+z0 = 0.5*nm
+plt.plot(T,densityV(z0,T))
+# for t in T:
+    # plt.plot(Z,densityV(Z,t))
 plt.show()
