@@ -26,17 +26,6 @@ def psi_n(t_n, r_n, k_, x_):
 def psiPrime_n(t_n, r_n, k_, x_):
     return 1j*k_*(t_n*cm.exp(1j * k_ * x_) - r_n*cm.exp(-1j*k_*x_))
 
-# def psi_n(t_n, r_n, k_, x_):
-#     return t_n*np.exp(1j * k_ * x_) + r_n*np.exp(-1j*k_*x_)
-
-# def psiPrime_n(t_n, r_n, k_, x_):
-#     return 1j*k_*(t_n*np.exp(1j * k_ * x_) - r_n*np.exp(-1j*k_*x_))
-
-# psi = lambda t, r, x: psi_n(t,r,k,x)
-# psiPrime = lambda t, r, x: psiPrime_n(t,r,k,x)
-# psi2 = lambda t, r, x: psi_n(t,r,kw,x)
-# psi2Prime = lambda t, r, x: psiPrime_n(t,r,kw,x)
-
 def func_as_reals(x, F):
     cIn = np.transpose([x[:-1:2],x[1::2]])
     cIn = [complex(c[0],c[1]) for c in cIn]
@@ -60,6 +49,7 @@ def genSolve(e):
     return res
 e1 = 0.05
 e = e2= 0.091
+e = e1
 print pi*sqrt(2/e1)/Ang
 print pi*sqrt(2/e2)/Ang
 k = sc.sqrt(2.*(e)*m_e/(hbar**2))
@@ -81,8 +71,8 @@ def modSquared(x):
         return abs(psi2(x))**2
     if L/2. <= x:
         return abs(psi3(x))**2
-
-X = np.linspace(-L/2-1*Ang,L/2+1*Ang,1000)
+alpha = 1.
+X = np.linspace(alpha*(-L/2-1*Ang),alpha*(L/2+1*Ang),1000)
 Y = [modSquared(x) for x in X]
 plt.plot(X,Y, label='(psi(x))**2, e = '+str(e))
 plt.axvline(-L/2, label='Left_border', linestyle='--', color='black')
