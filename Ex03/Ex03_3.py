@@ -103,6 +103,21 @@ def findIndex(x, Z):
             return i
 
 
+def getPsi(x, coeffs, K, Z):
+    N = len(Z)
+    n = 2 * N
+    if x < Z[0]:
+        return psi_n(1, coeffs[0], K[0], x)
+    if Z[N - 1] < x:
+        return psi_n(coeffs[n - 1], 0, K[N], x)
+    index = findIndex(x, Z)
+    return psi_n(coeffs[2 * index + 1], coeffs[2 * (index + 1)], K[index + 1], x)
+
+def modSquaredToPsi(psi_old, dx):
+    area = np.trapz(psi_old, dx=dx)
+    psi_new = np.sqrt(psi_old) / np.sqrt(area)
+    return psi_new
+
 def modSquared(x, coeffs, K, Z):
     N = len(Z)
     n = 2 * N
@@ -128,7 +143,7 @@ k = sc.sqrt(2. * (E - V0) * m_e / (hbar ** 2))
 
 # t = 2 * m_e * V0 / (hbar ** 2)
 
-e = -1.18 * eV
+e = -3.23 * eV
 V = np.array([0., -4. * eV, 0.])
 Z = np.array([0., L])
 checkData(V, Z)
@@ -145,9 +160,10 @@ print coeffsV
 # print coeffsS
 # cfs = genSolve(e)
 # print F(cfs,k,kw)
-
+dx = (L + 2 * Ang)/1000
 X = np.linspace(-1 * Ang, L + 1 * Ang, 1000)
-Y = [modSquared(x, coeffsV, K, Z) for x in X]
+Y = np.array([modSquared(x, coeffsV, K, Z) for x in X])
+# Y = modSquaredToPsi(Y, dx)
 plt.plot(X, Y, label='(psi(x))**2, e = ' + str(e / eV))
 plt.axvline(0, label='Left_border', linestyle='--', color='black')
 plt.axvline(L, label='Right_border', linestyle='--', color='black')

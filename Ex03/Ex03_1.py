@@ -11,7 +11,7 @@ eV = Hartree / 27.211386
 Ang = a_0 / 0.529177210
 
 V0 = 4. * eV  # hartree
-L = 20. * Ang  # bohr
+L = 5. * Ang  # bohr
 
 t = 2 * m_e * V0 / (hbar ** 2)
 
@@ -132,7 +132,7 @@ def fromEtoK(e):
     return sqrt(2.*(e+V0))
 
 V0 = 4. * eV  # hartree
-L = 5. * Ang  # bohr
+L = 20. * Ang  # bohr
 X = np.linspace(-2*L,2*L,1001,True)
 even = EvenFiniteWell(V0,L,101)
 odd = OddFiniteWell(V0,L,101)
