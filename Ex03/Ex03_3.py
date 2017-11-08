@@ -93,13 +93,16 @@ def func_as_reals(x, F, K, Z):
 
 
 def genSolveVec(K, Z):
-    res = opt.fsolve(func_as_reals, np.zeros(len(Z) * 2 * 2), (Fun, K, Z))
-    return reals_as_complex(res)
+    try:
+        res = opt.fsolve(func_as_reals, np.zeros(len(Z) * 2 * 2), (Fun, K, Z))
+    except RuntimeWarning:
+        res = np.zeros(len(Z) * 2 * 2)
+    return res
 
 
 def findIndex(x, Z):
     for i in range(len(Z) - 1):
-        if Z[i] <= x < Z[i + 1]:
+        if Z[i] <= x <= Z[i + 1]:
             return i
 
 
@@ -108,14 +111,14 @@ def getPsi(x, coeffs, K, Z):
     n = 2 * N
     if x < Z[0]:
         return psi_n(1, coeffs[0], K[0], x)
-    if Z[N - 1] < x:
+    if Z[N - 1] <= x:
         return psi_n(coeffs[n - 1], 0, K[N], x)
     index = findIndex(x, Z)
     return psi_n(coeffs[2 * index + 1], coeffs[2 * (index + 1)], K[index + 1], x)
 
-def modSquaredToPsi(psi_old, dx):
+def modSquaredNormalized(psi_old, dx):
     area = np.trapz(psi_old, dx=dx)
-    psi_new = np.sqrt(psi_old) / np.sqrt(area)
+    psi_new = psi_old / area
     return psi_new
 
 def modSquared(x, coeffs, K, Z):
@@ -134,47 +137,68 @@ def modSquared(x, coeffs, K, Z):
         index = findIndex(x, Z)
         return abs(psi_n(coeffs[2 * index + 1], coeffs[2 * (index + 1)], K[index + 1], x)) ** 2
 
+def potential(V,Z,x):
+    N = len(Z)
+    if N == 1:
+        if x < Z[0]:
+            return V[0]
+        if Z[N - 1] <= x:
+            return V[1]
+    if N > 1:
+        if x < Z[0]:
+            return V[0]
+        if Z[N - 1] < x:
+            return V[len(V)-1]
+        index = findIndex(x, Z)
+        return V[index+1]
+
+
 
 V0 = 1. * eV  # hartree
-L = 5. * Ang  # bohr
+L = 10. * Ang  # bohr
 
 E = np.linspace(0., 3 * eV, 1001, True)
 k = sc.sqrt(2. * (E - V0) * m_e / (hbar ** 2))
 
-# t = 2 * m_e * V0 / (hbar ** 2)
 
-e = -3.23 * eV
-V = np.array([0., -4. * eV, 0.])
-Z = np.array([0., L])
-checkData(V, Z)
+# e = 0.01
 
-K = getK(e, V)
-k = sc.sqrt(2. * (e) * m_e / (hbar ** 2))
-kw = sc.sqrt(2. * (e - V0) * m_e / (hbar ** 2))
-# print k
-# print kw
+Energies = [0.01, 0.02, 0.03, 0.05, 0.091]
+for e in Energies:
+    V = np.array([-4.*eV, -1.*eV, 1. * eV, 2. * eV, 3.*eV])
+    Z = np.array([-L, 0., L, 2.*L])
+    checkData(V, Z)
 
-coeffsV = genSolveVec(K, Z)
-# coeffsS = genSolve(e)
-print coeffsV
-# print coeffsS
-# cfs = genSolve(e)
-# print F(cfs,k,kw)
-dx = (L + 2 * Ang)/1000
-X = np.linspace(-1 * Ang, L + 1 * Ang, 1000)
-Y = np.array([modSquared(x, coeffsV, K, Z) for x in X])
-# Y = modSquaredToPsi(Y, dx)
-plt.plot(X, Y, label='(psi(x))**2, e = ' + str(e / eV))
-plt.axvline(0, label='Left_border', linestyle='--', color='black')
-plt.axvline(L, label='Right_border', linestyle='--', color='black')
-plt.legend(loc='best')
+    pot = lambda x: potential(V,Z,x)
+
+    K = getK(e, V)
+    print K
+    k = sc.sqrt(2. * (e) * m_e / (hbar ** 2))
+    kw = sc.sqrt(2. * (e - V0) * m_e / (hbar ** 2))
+
+    coeffsV = genSolveVec(K, Z)
+    if np.all(coeffsV==0.) == False:
+        coeffsV = reals_as_complex(coeffsV)
+    # print coeffsV
+        print Fun(coeffsV,K,Z)
+        infinity = 50 * Ang
+        dx = 2*(infinity)/10000
+        X = np.linspace(-infinity, infinity, 10000)
+        Y = np.array([modSquared(x, coeffsV, K, Z) for x in X])
+        Y = modSquaredNormalized(Y, dx)
+        print np.trapz(Y, dx=dx)
+        Yv = [pot(x) for x in X]
+        print len(Yv)
+        print Yv[0], pot(-infinity)
+        print len(X)
+        # plt.figure(figsize=(13,13))
+        if e==Energies[0]:
+            plt.plot(X,Yv,label='V(X)', color='black', linewidth=3)
+        plt.plot(X, e+Y, label='E=' + str(e)+' hartree')
+        plt.axvline(0, label='Left_border', linestyle='--', color='black')
+        plt.axvline(L, label='Right_border', linestyle='--', color='black')
+        plt.legend(loc='best')
+        plt.axhline(e, label='E='+str(e)+' hartree', color='black')
+        plt.xlabel('$x,\ bohrs$',fontsize=20)
+        plt.ylabel('$|\phi(x)|^{2}$',fontsize=20)
 plt.show()
-
-# E = np.linspace(0., 3 * eV, 1001, True)
-# Y = [abs(genSolve(e)[3]) for e in E]
-# plt.plot(E,Y, label='T=T(e)')
-# plt.axvline(1.*eV, label='e=V0', linestyle='--', color='black')
-# plt.axvline(0.05, label='e=0.05 (1st_Max)', linestyle='-', color='red')
-# plt.axvline(0.091, label='e=0.091 (2nd_Max)', linestyle='-', color='red')
-# plt.legend(loc='best')
-# plt.show()

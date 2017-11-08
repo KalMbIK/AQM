@@ -49,7 +49,7 @@ def genSolve(e):
     return res
 e1 = 0.05
 e = e2= 0.091
-e = e1
+# e = e1
 print pi*sqrt(2/e1)/Ang
 print pi*sqrt(2/e2)/Ang
 k = sc.sqrt(2.*(e)*m_e/(hbar**2))
@@ -74,8 +74,10 @@ def modSquared(x):
 alpha = 1.
 X = np.linspace(alpha*(-L/2-1*Ang),alpha*(L/2+1*Ang),1000)
 Y = [modSquared(x) for x in X]
-plt.plot(X,Y, label='(psi(x))**2, e = '+str(e))
+plt.plot(X,Y, label='E='+str(e/eV)+' eV')
 plt.axvline(-L/2, label='Left_border', linestyle='--', color='black')
 plt.axvline(L/2, label='Right_border', linestyle='--', color='black')
 plt.legend(loc='best')
+plt.xlabel('$x,\ bohrs$',fontsize=20)
+plt.ylabel('$|\phi(x)|^{2}$',fontsize=20)
 plt.show()

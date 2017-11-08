@@ -68,9 +68,13 @@ class AbstractFiniteWell(object):
                     sol.append(ttt)
         return np.array(sol)
 
+    def __str__(self):
+        return self.name + ' solutions'
+
 class OddFiniteWell(AbstractFiniteWell):
     def __init__(self, V0_, L_, Nk):
         AbstractFiniteWell.__init__(self, V0_, L_, Nk)
+        self.name = 'Odd'
         # self.allowed = 0
 
     def psi(self, x, k, kappa, coef):
@@ -93,6 +97,7 @@ class OddFiniteWell(AbstractFiniteWell):
 class EvenFiniteWell(AbstractFiniteWell):
     def __init__(self, V0_, L_, Nk):
         AbstractFiniteWell.__init__(self, V0_, L_, Nk)
+        self.name = 'Even'
         # self.allowed = 0
         # for k in self.k:
         #     if k < 0:
@@ -134,23 +139,19 @@ def fromEtoK(e):
 V0 = 4. * eV  # hartree
 L = 20. * Ang  # bohr
 X = np.linspace(-2*L,2*L,1001,True)
-even = EvenFiniteWell(V0,L,101)
-odd = OddFiniteWell(V0,L,101)
+odd = EvenFiniteWell(V0,L,101)
 
 psisOdd = odd.getPsiFunctions()
 energiesOdd = odd.getEnergies()
-psisEven = even.getPsiFunctions()
-energiesEven = even.getEnergies()
 
 Z = getNormalizedFunctions(psisOdd, X)
 for y,e in zip(Z, energiesOdd):
-    plt.plot(X,y, label=str(e/eV))
+    plt.plot(X,y, label=str(e/eV)+' eV')
 
-Z = getNormalizedFunctions(psisEven, X)
-for y,e in zip(Z, energiesEven):
-    plt.plot(X,y, label=str(e/eV))
-    # plt.plot(X,y, label=str(fromEtoK(e)))
-plt.axvline(-L/2, label='Left_border', linestyle='--', color='black')
-plt.axvline(L/2, label='Right_border', linestyle='--', color='black')
+plt.axvline(-L/2, label='Left border', linestyle='--', color='black')
+plt.axvline(L/2, label='Right border', linestyle='--', color='black')
 plt.legend(loc='best')
+plt.title(str(odd)+' L='+str(L/Ang)+'$\ \AA$')
+plt.xlabel('$x,\ bohrs$',fontsize=20)
+plt.ylabel('$|\phi(x)|^{2}$',fontsize=20)
 plt.show()

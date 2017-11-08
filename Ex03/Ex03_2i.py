@@ -51,7 +51,7 @@ def genSolve(e):
         a1, a2, a3, a4 = F([complex(r1, c1), complex(r2, c2), complex(r3, c3), complex(r4, c4)])
         return [a1.real, a1.imag, a2.real, a2.imag, a3.real, a3.imag, a4.real, a4.imag]
     res = opt.fsolve(func_as_reals,[10.,-740.,-10.,25,58.213,-127.,150.,0.])
-    print func_as_reals(res)
+    # print func_as_reals(res)
     return res
 
 # psi1 = lambda x: psi_n(1.,-0.5,sc.sqrt(2.*(1.2*eV-V0)*m_e/(hbar**2)),x)
@@ -72,4 +72,6 @@ plt.axvline(1.*eV, label='e=V0', linestyle='--', color='black')
 plt.axvline(0.05, label='e=0.05 (1st_Max)', linestyle='-', color='red')
 plt.axvline(0.091, label='e=0.091 (2nd_Max)', linestyle='-', color='red')
 plt.legend(loc='best')
+plt.xlabel('$E,\ hartree$',fontsize=20)
+plt.ylabel('$|T(E)|^{2}$',fontsize=20)
 plt.show()
