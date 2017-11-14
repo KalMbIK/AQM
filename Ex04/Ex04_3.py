@@ -68,9 +68,11 @@ Bi = lambda x: sp.airy(dzita(x))[2]
 a = -30.*Ang
 b = x0 + 15.*Ang
 delta = b-a
-N = [100*2**x + 1 for x in range(1, 10)]
+epsMachine = 1.11e-16
+N = [100*2**x + 1 for x in range(0, 15)]
 print N
 H = [delta/(n-1) for n in N]
+# EPS = [epsMachine/h for h in H]
 errors = []
 # print N
 f = Ai
@@ -83,6 +85,7 @@ for n in N:
     errors.append(cmpVV(Y,exactY))
 
 plt.loglog(H,errors)
+# plt.loglog(H,EPS)
 plt.show()
 # sp.airy()
 
