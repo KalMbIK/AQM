@@ -51,11 +51,11 @@ eV = Hartree / 27.211386
 Ang = a_0 / 0.529177210
 VAng = HartreeBohr / 51.4220652 # Electric field in AU
 
-E = 4. * eV  # hartree
+E = 10. * eV  # hartree
 L = 5. * Ang  # bohr
 Epslon = 1. * VAng
 
-alpha = (2*Epslon)**(1/3.)
+alpha = (2.*Epslon)**(1./3.)
 x0 = E/e/Epslon
 dzita = lambda x: alpha * (x - x0)
 
@@ -65,11 +65,11 @@ kSq = lambda x: kSquaredParametrized(x, E, V)
 Ai = lambda x: sp.airy(dzita(x))[0]
 Bi = lambda x: sp.airy(dzita(x))[2]
 
-a = -30.*Ang
+a = x0-15.*Ang
 b = x0 + 15.*Ang
 delta = b-a
 epsMachine = 1.11e-16
-N = [100*2**x + 1 for x in range(0, 15)]
+N = [100*2**x + 1 for x in range(9, 10)]
 print N
 H = [delta/(n-1) for n in N]
 # EPS = [epsMachine/h for h in H]
@@ -80,11 +80,15 @@ for n in N:
     X = np.linspace(a, b, n, True)
     # Y = NumerovIterations(X,f)
     Y = NumerovIterations(X[::-1],f)
+    Y1 = [f(x) for x in X]
     Y = Y[::-1]
+    plt.plot(X,Y)
+    plt.plot(X,Y1)
+    plt.axvline(x0)
     exactY = f(X)
     errors.append(cmpVV(Y,exactY))
 
-plt.loglog(H,errors)
+# plt.loglog(H,errors)
 # plt.loglog(H,EPS)
 plt.show()
 # sp.airy()

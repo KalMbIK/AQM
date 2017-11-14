@@ -10,6 +10,7 @@ def normalize(psi_old, dx):
     return psi_new, sq
 
 Ai = lambda x: sp.airy(x)[0]
+Bi = lambda x: sp.airy(x)[2]
 # alpha = 0.198
 # alpha2 = 0.249
 # dz1 = -2.338
@@ -24,12 +25,30 @@ Ai = lambda x: sp.airy(x)[0]
 # plt.plot(X,Y)
 # plt.show()
 
-
 Ang = 1. / 0.529177210
 VAng = 1 / 51.4220652 # Electric field in AU
 L = 12.*Ang
-epsilon = (10**-4)*(500 * VAng)
+epsilon = 3.*(10**-4)*(500 * VAng)
 alpha = (2*epsilon)**(1./3)
-print epsilon/alpha*2.58
-print alpha*L
-print (2.58/alpha-L/2.)*epsilon
+arg = lambda z, dz: alpha*(z+L/2.)+dz
+ci = lambda dz: -Bi(dz)/Ai(dz)
+# print epsilon/alpha*2.58
+# print alpha*L
+# print (12.52/alpha-L/2.)*epsilon
+# alpha = 0.198
+# alpha2 = 0.249
+dz1 = -2.58
+dz2 = -6.36
+dz3 = -12.518
+dzx = dz3
+X = np.linspace(-L/2., L/2., 10000)
+Y = np.array([ci(dzx)*Ai(arg(x,dzx))+Bi(arg(x,dzx)) for x in X])
+Y, sq = normalize(Y,X[1]-X[0])
+print sq
+print ci(dzx)*sq
+print alpha
+print arg(0,dzx)
+print np.trapz(Y**2, dx=(X[1]-X[0]))
+# print sq*2
+plt.plot(X,Y)
+plt.show()
