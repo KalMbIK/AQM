@@ -81,6 +81,7 @@ print H
 # EPS = [epsMachine/h for h in H]
 errors = []
 # print N
+
 f = Bi
 for n in N:
     X = np.linspace(a, b, n, True)
