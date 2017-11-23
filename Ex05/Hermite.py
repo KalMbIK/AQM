@@ -11,16 +11,18 @@ H.append(2 * x)
 
 def hermite(H_n, H_1, n):
     return sympify((2*x * H_n - 2*n*H_1)).simplify().expand()
-
-for i in range(2, 10):
+# Last polynomial I store is the 20th
+for i in range(2, 21):
     H.append(hermite(H[i - 1], H[i - 2], i - 1))
 
 Hf = [lambdify(x, h) for h in H]
-X = np.linspace(-2.,2.,100)
-Y = [f(X) for f in Hf]
-plt.axhline(1.0, label=str(0), color='black')
+X = np.linspace(-3.,3.,100)
+# You can chose what polynomials to print and plot as you want.
+desirablePolynomials = [4, 8, 2]
+Y = [Hf[i](X) if i >= 1 else np.ones_like(X) for i in desirablePolynomials]
 
-for i in range(1,8):
-    plt.plot(X,Y[i],label=str(i))
+for y,i in zip(Y,desirablePolynomials):
+    plt.plot(X,y,label=str(i))
+    print 'H[' + str(i) + ']=' + str(H[i])
 plt.legend(loc='best')
 plt.show()
