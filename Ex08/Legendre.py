@@ -23,7 +23,7 @@ Pf = [lambdify(x, h) for h in P]
 X = np.linspace(-1.,1.,100)
 # You can chose what polynomials to print and plot as you want.
 
-desirablePolynomials = [1, 2, 3, 4, 5]
+desirablePolynomials = [0, 1, 2, 3, 4, 5]
 GramMatrix = []
 for n, idx in zip(desirablePolynomials,range(len(desirablePolynomials))):
     GramMatrix.append([])
